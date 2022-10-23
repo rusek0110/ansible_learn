@@ -1,0 +1,51 @@
+#version=RHEL8
+# Use text install
+text
+
+repo --name="AppStream" --baseurl=file:///run/install/sources/mount-0000-cdrom/AppStream
+
+%packages
+@^server-product-environment
+kexec-tools
+
+%end
+
+# Keyboard layouts
+keyboard --xlayouts='us'
+# System language
+lang en_US.UTF-8
+
+# Network information
+network  --bootproto=dhcp --device=eth0 --ipv6=auto --activate
+network  --hostname={{ VM_name }}.localdomain
+
+# Use CDROM installation media
+cdrom
+
+# Run the Setup Agent on first boot
+firstboot --enable
+
+ignoredisk --only-use=vda
+autopart --type=lvm
+# Partition clearing information
+clearpart --none --initlabel
+
+# System timezone
+timezone Europe/Warsaw --isUtc
+
+# Root password
+# rootpw password
+rootpw --iscrypted $6$.z8qTX1LSNf5I8lh$Gn0VKXVc9/Y3nv3RCPZ31fPpzejIs0p3tz.FeNbds9lp7PVIpdkWDKD9CQ3eWYlmV25Y1UehuQ388vOH3e.Di/
+
+%addon com_redhat_kdump --enable --reserve-mb='auto'
+
+%end
+
+# Reboot after installation
+reboot
+
+%anaconda
+pwpolicy root --minlen=6 --minquality=1 --notstrict --nochanges --notempty
+pwpolicy user --minlen=6 --minquality=1 --notstrict --nochanges --emptyok
+pwpolicy luks --minlen=6 --minquality=1 --notstrict --nochanges --notempty
+%end

@@ -1,0 +1,15 @@
+---
+- hosts: localhost
+  gather_facts: true
+  roles:
+    # - role: netplan
+    - role: KVM_create_VM
+
+
+
+      
+
+
+
+      
+

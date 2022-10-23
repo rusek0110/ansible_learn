@@ -1,0 +1,16 @@
+- name: Create network bridge
+  ansible.builtin.template:
+    src: templates/01-netconfig.yaml.j2
+    dest: /etc/netplan/01-netconfig.yaml
+    owner: root
+    group: root
+    mode: '0644'
+    backup: yes
+  become: true
+  register: NETPLAN_config_changed
+
+- name: reboot after netplan config change 
+  ansible.builtin.reboot:
+  when: NETPLAN_config_changed.changed == true
+  tags:
+    - never

@@ -1,0 +1,11 @@
+ansible_python_interpreter: /usr/bin/python3 
+
+VM_name: "test01"
+VM_memory_size: "2048" #size in MiB
+VM_vCPU_count: "2"
+libvirt_iso_dir: "/var/lib/libvirt/images/iso/"
+OS_variant: "centos8" #check os name via command: osinfo-query os
+ISO_filemene:  "{{ OS_variant }}.iso"
+disk_size: "10" #size in GiB
+
+

@@ -1,0 +1,90 @@
+- name: Check if virtualization is on
+  ansible.builtin.command:
+    cmd: egrep 'vmx|svm' /proc/cpuinfo -c
+  register: VT_on
+  failed_when: VT_on.stdout == 0
+
+- name: Install KVM packages 
+  ansible.builtin.package:
+    name: 
+      - bridge-utils 
+      - cpu-checker
+      - libvirt-clients
+      - libvirt-daemon
+      - qemu
+      - qemu-kvm
+      - virtinst 
+      - libvirt-daemon-system
+      - virt-manager
+    state: present
+  become: true
+
+#check if VM with that VM name exist
+
+- name: check if VM with that VM name exist
+  community.libvirt.virt:
+    command: list_vms
+  register: VM_list
+
+# - name: dd
+#   ansible.builtin.debug:
+#     var: VM_list
+
+#check if iso exist if not download file
+
+- name: check if iso exist
+  ansible.builtin.file:
+    path: "{{ libvirt_iso_dir }}{{ ISO_filemene }}"
+    state: file
+  register: ISO_exist
+
+- name: copy kicksctart config to hypervisor
+  ansible.builtin.template:
+    src: templates/anaconda-ks.cfg.j2
+    dest: /tmp/anaconda-ks.cfg
+    mode: 0644
+
+
+
+# - name: create VM 
+#   ansible.builtin.command:
+#     argv:
+#     - virt-install 
+#     - --name={{ VM_name }}
+#     - --memory={{ VM_memory_size }}
+#     - --vcpus={{ VM_vCPU_count }}
+#     - --cpu=host
+#     - --os-type=linux 
+#     - --os-variant={{ OS_variant }}
+#     - --location={{ libvirt_iso_dir }}{{ ISO_filemene }}
+#     - --disk 
+#     - size={{ disk_size }}
+#     - --network 
+#     - bridge={{ ansible_default_ipv4.interface }}
+#     - --noautoconsole
+#     - --initrd-inject=/tmp/anaconda-ks-2.cfg 
+#     - --extra-args 
+#     - inst.ks=file:/anaconda-ks-2.cfg
+#     - --dry-run
+#   when: {{ VM_name }} in VM_list.list_vms
+
+
+# - name: create VM 
+#   ansible.builtin.command:
+#     argv:
+#     - virt-install 
+#     - --name={{ VM_name }}
+#     - --memory={{ VM_memory_size }}
+#     - --vcpus={{ VM_vCPU_count }}
+#     - --cpu=host
+#     - --os-type=linux 
+#     - --os-variant={{ OS_variant }}
+#     - --location={{ libvirt_iso_dir }}{{ ISO_filemene }}
+#     - --disk 
+#     - size={{ disk_size }}
+#     - --network 
+#     - bridge={{ ansible_default_ipv4.interface }}
+#     - --noautoconsole
+#     - --initrd-inject=anaconda-ks-2.cfg 
+#     - --extra-args 
+#     - inst.ks=file:/anaconda-ks-2.cfg
